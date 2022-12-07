@@ -25,8 +25,8 @@ const PLACES = [
       "https://upload.wikimedia.org/wikipedia/commons/2/22/Hagia_Sophia_Mars_2013.jpg",
     address: "Sultan Ahmet, Ayasofya Meydanı No:1, 34122 Fatih/İstanbul",
     location: {
-      lat: 41.008587,
-      lng: 28.9779863,
+      lat: 41.0084757,
+      lng: 28.9791504,
     },
     creator: "u1",
   },
