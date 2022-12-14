@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 
 import Button from "../../shared/components/FormElements/Button";
 import Card from "../../shared/components/UIElements/Card";
@@ -7,11 +7,15 @@ import "./Auth.css";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
+  VALIDATOR_REQUIRE,
 } from "../../shared/util/validator";
 import { useForm } from "../../shared/hooks/form-hook";
+import { AuthContext } from "../../shared/context/auth-context";
 
 const Auth = () => {
-  const [formState, inputHandler] = useForm(
+  const auth = useContext(AuthContext);
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
         value: "",
@@ -28,6 +32,29 @@ const Auth = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
     console.log(formState.inputs);
+    auth.login();
+  };
+
+  const switchModeHandler = () => {
+    if (!isLoginMode) {
+      setFormData(
+        {
+          ...formState.inputs,
+          name: undefined,
+        },
+        formState.inputs.email.isValid && formState.inputs.password.isValid
+      );
+    } else {
+      setFormData(
+        {
+          ...formState.inputs,
+          name: "",
+          isValid: false,
+        },
+        false
+      );
+    }
+    setIsLoginMode((prevMode) => !prevMode);
   };
 
   return (
@@ -35,12 +62,23 @@ const Auth = () => {
       <h2>Login Required</h2>
       <hr />
       <form onSubmit={onSubmitHandler}>
+        {!isLoginMode && (
+          <Input
+            element="input"
+            id="name"
+            type="text"
+            label="Your Name"
+            validators={[VALIDATOR_REQUIRE()]}
+            errorText="Please enter a name!"
+            onInput={inputHandler}
+          />
+        )}
         <Input
           element="input"
           type="email"
           id="email"
           label="Email"
-          validators={[VALIDATOR_EMAIL]}
+          validators={[VALIDATOR_EMAIL()]}
           errorText="Please enter a valid email!"
           onInput={inputHandler}
         />
@@ -54,9 +92,12 @@ const Auth = () => {
           onInput={inputHandler}
         />
         <Button type="submit" disabled={!formState.isValid}>
-          Login
+          {isLoginMode ? "Login" : "Sign Up"}
         </Button>
       </form>
+      <Button inverse onClick={switchModeHandler}>
+        Switch to {isLoginMode ? "Sign Up" : "Login"}
+      </Button>
     </Card>
   );
 };
